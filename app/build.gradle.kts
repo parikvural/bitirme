@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.frkvrl.bitirme"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.frkvrl.bitirme"
