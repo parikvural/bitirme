@@ -5,13 +5,21 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:outlineAmbientShadowColor="#00000000"
-    android:outlineProvider="background"
-    android:outlineSpotShadowColor="#00000000"
-    tools:context=".MainActivity3">
+    tools:context=".MainActivity6">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="260dp"
+        android:layout_height="198dp"
+        android:layout_marginBottom="264dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView11"
+        app:layout_constraintVertical_bias="0.983" />
 
     <TextView
-        android:id="@+id/textView8"
+        android:id="@+id/textView11"
         android:layout_width="413dp"
         android:layout_height="85dp"
         android:background="#448AFF"

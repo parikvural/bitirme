@@ -1,0 +1,32 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/navbar"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:background="#CCCCCC"
+    android:orientation="horizontal">
+
+    <Button
+        android:id="@+id/nav_home"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:text="Ana Sayfa" />
+
+    <ImageButton
+        android:id="@+id/nav_qr"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/nav_qr_desciption"
+        app:srcCompat="@drawable/user__2_" />
+
+    <Button
+        android:id="@+id/nav_settings"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:text="Bilgilerim" />
+
+</LinearLayout>
