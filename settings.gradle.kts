@@ -1,6 +1,6 @@
 pluginManagement {
     repositories {
-        google {
+        google() {
             content {
                 includeGroupByRegex("com\\.android.*")
                 includeGroupByRegex("com\\.google.*")
@@ -18,6 +18,7 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
+
 
 rootProject.name = "bitirme"
 include(":app")

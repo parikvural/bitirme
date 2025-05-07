@@ -5,21 +5,24 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:outlineAmbientShadowColor="#00000000"
-    android:outlineProvider="background"
-    android:outlineSpotShadowColor="#00000000"
-    tools:context=".MainActivity3">
+    tools:context=".ogrtdevbilgi">
 
     <TextView
-        android:id="@+id/textView8"
+        android:id="@+id/textView13"
         android:layout_width="413dp"
         android:layout_height="85dp"
         android:background="#448AFF"
         android:gravity="center"
         android:text="Dokuz Eylül Üniversitesi"
         android:textColor="#000000"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="-1dp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="316dp"
+        android:layout_height="316dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        app:layout_constraintTop_toBottomOf="@+id/textView13" />
 </androidx.constraintlayout.widget.ConstraintLayout>

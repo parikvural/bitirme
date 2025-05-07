@@ -6,10 +6,10 @@ import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 
-// BaseActivity.kt
-open class BaseActivity : AppCompatActivity() {
+// ogrnavbar.kt
+open class ogrnavbar : AppCompatActivity() {
     override fun setContentView(layoutResID: Int) {
-        val fullView = layoutInflater.inflate(R.layout.activity_base, null)
+        val fullView = layoutInflater.inflate(R.layout.ogrnavbar_1, null)
         val activityContainer: FrameLayout = fullView.findViewById(R.id.activity_content)
         layoutInflater.inflate(layoutResID, activityContainer, true)
         super.setContentView(fullView)
@@ -18,21 +18,21 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     private fun setupNavbar() {
-        findViewById<Button>(R.id.nav_home)?.setOnClickListener {
-            if (this !is MainActivity2) {
-                startActivity(Intent(this, MainActivity2::class.java))
+        findViewById<Button>(R.id.nav_ogrhome)?.setOnClickListener {
+            if (this !is ograna) {
+                startActivity(Intent(this, ograna::class.java))
             }
         }
 
         findViewById<ImageButton>(R.id.nav_qr)?.setOnClickListener {
-            if (this !is MainActivity3) {
-                startActivity(Intent(this, MainActivity3::class.java))
+            if (this !is ogrqr) {
+                startActivity(Intent(this, ogrqr::class.java))
             }
         }
 
         findViewById<Button>(R.id.nav_settings)?.setOnClickListener {
-            if (this !is MainActivity4) {
-                startActivity(Intent(this, MainActivity4::class.java))
+            if (this !is ogrbilgi) {
+                startActivity(Intent(this, ogrbilgi::class.java))
             }
         }
     }
