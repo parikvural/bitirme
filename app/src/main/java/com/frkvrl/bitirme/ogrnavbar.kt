@@ -24,11 +24,15 @@ open class ogrnavbar : AppCompatActivity() {
             }
         }
 
+
         findViewById<ImageButton>(R.id.nav_qr)?.setOnClickListener {
-            if (this !is ogrqr) {
-                startActivity(Intent(this, ogrqr::class.java))
-            }
+            val intent = Intent(this, ogrqr::class.java)
+            startActivity(intent)
         }
+
+
+
+
 
         findViewById<Button>(R.id.nav_settings)?.setOnClickListener {
             if (this !is ogrbilgi) {

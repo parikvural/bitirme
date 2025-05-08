@@ -63,7 +63,7 @@ class giris : AppCompatActivity() {
                     val user = auth.currentUser // Giriş yapmış kullanıcı nesnesini alabilirsiniz (isteğe bağlı)
 
                     // Kullanıcıyı bir sonraki ekrana yönlendir
-                    val intent = Intent(this, ogrtana::class.java)
+                    val intent = Intent(this, ograna::class.java)
                     startActivity(intent)
                     finish() // Giriş Activity'sini kapat ki geri tuşuyla dönülmesin
 
