@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "535974079780",
+    "project_id": "bitirme-cfd2e",
+    "storage_bucket": "bitirme-cfd2e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:535974079780:android:15db9087a557091cfa57b1",
+        "android_client_info": {
+          "package_name": "com.frkvrl.bitirme"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCO3tgKnXZxpMkGqTIUpnzo8DBUUXZrCSw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
