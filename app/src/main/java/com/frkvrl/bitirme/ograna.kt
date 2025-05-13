@@ -1,103 +1,87 @@
 package com.frkvrl.bitirme
 
 import android.os.Bundle
-import android.util.Log // Loglama için
-import androidx.activity.enableEdgeToEdge
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
+import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.frkvrl.bitirme.UserAdapter
-import com.bumptech.glide.Glide
 
-// Eğer ogrnavbar'dan miras alıyorsanız
 class ograna : ogrnavbar() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var userAdapter: UserAdapter
-    private val userList = mutableListOf<User>() // Adapter'ın kullanacağı liste
+    private var userList = mutableListOf<User>()
 
-    // Firebase veritabanı referansı (Global veya sınıf içinde tanımlanır)
     private val database = Firebase.database("https://bitirme-cfd2e-default-rtdb.europe-west1.firebasedatabase.app")
-    private val usersRef = database.getReference("users") // Veritabanınızdaki kullanıcıların bulunduğu ana yol
+    private val usersRef = database.getReference("users")
 
-    // Veri dinleyicisi (Lifecycle'a göre yönetilmesi gerekir)
+    // ⬇️ Listener sınıf seviyesinde tanımlı
     private val userValueEventListener = object : ValueEventListener {
-        override fun onDataChange(dataSnapshot: DataSnapshot) {
-            // Bu metod, veri geldiğinde veya değiştiğinde çağrılır.
-
-            // Önce mevcut listeyi temizle
+        override fun onDataChange(snapshot: DataSnapshot) {
+            Log.d("FirebaseData", "Veri alındı. Mevcut: ${snapshot.exists()}")
             userList.clear()
 
-            // DataSnapshot içindeki her bir çocuğu (yani her bir kullanıcıyı) gez
-            for (userSnapshot in dataSnapshot.children) {
-                // Her çocuğu User veri modelimize dönüştürmeye çalış
-                val user = userSnapshot.getValue(User::class.java)
-                // Eğer dönüşüm başarılıysa ve user null değilse listeye ekle
-                if (user != null) {
-                    userList.add(user)
+            // Giriş yapan kullanıcının UID'sini al
+            val currentUid = FirebaseAuth.getInstance().currentUser?.uid
+
+            // Eğer giriş yapan kullanıcı varsa
+            if (currentUid != null) {
+                var isUserFound = false  // Kullanıcı bulunup bulunmadığını kontrol etmek için değişken
+
+                // Firebase veritabanındaki her bir kullanıcıyı kontrol et
+                for (userSnap in snapshot.children) {
+                    val user = userSnap.getValue(User::class.java)
+
+                    // Eğer user objesi null değilse ve UID'ler eşleşiyorsa, listeye ekle
+                    if (user != null && user.uid == currentUid) {
+                        Log.d("FirebaseData", "Aktif Kullanıcı: ${user.ad} ${user.soyad}")
+                        userList.add(user)
+                        isUserFound = true  // Kullanıcı bulundu olarak işaretle
+                        break  // Giriş yapan kullanıcı bulundu, daha fazla arama yapma
+                    }
                 }
+
+                // Eğer giriş yapan kullanıcı bulunduysa, veriyi güncelle ve adapter'ı yenile
+                if (isUserFound) {
+                    userAdapter.updateData(userList)
+                    Log.d("FirebaseData", "Aktif Kullanıcı bulundu ve Adapter güncellendi.")
+                } else {
+                    Log.w("FirebaseData", "Giriş yapan kullanıcı bulunamadı.")
+                }
+            } else {
+                Log.w("FirebaseData", "Giriş yapan kullanıcı bulunamadı.")
             }
-
-            // RecyclerView adapter'ını yeni verilerle güncelle
-            userAdapter.updateData(userList)
-
-            Log.d("FirebaseData", "Veri başarıyla çekildi. Toplam kullanıcı: ${userList.size}")
         }
 
-        override fun onCancelled(databaseError: DatabaseError) {
-            // Veri okuma başarısız olursa bu metod çağrılır
-            Log.w("FirebaseData", "Veri okuma hatası:", databaseError.toException())
-            // Kullanıcıya bir hata mesajı gösterebilirsiniz
+        override fun onCancelled(error: DatabaseError) {
+            Log.w("FirebaseData", "Veri alınamadı: ${error.toException()}")
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge() // Zaten yapılıyordu
         setContentView(R.layout.ograna)
 
-        // RecyclerView'ı bulma
-        recyclerView = findViewById(R.id.recyclerViewUsers) // Layout dosyanızdaki RecyclerView'ın ID'si
-
-        // Adapter ve LayoutManager ayarlama
-        // Başlangıçta boş bir liste ile adapter'ı oluştur
-        userAdapter = UserAdapter(userList) // userList'i burada boş olarak veriyoruz, veri geldikçe güncellenecek
+        recyclerView = findViewById(R.id.recyclerViewUsers)
         recyclerView.layoutManager = LinearLayoutManager(this)
+        userAdapter = UserAdapter(userList)
         recyclerView.adapter = userAdapter
 
-        // Edge-to-Edge için Insetleri RecyclerView'a uygulama (önceki örnekteki gibi)
-        ViewCompat.setOnApplyWindowInsetsListener(recyclerView) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
-            v.updatePadding(
-                left = systemBars.left,
-                top = systemBars.top,
-                right = systemBars.right,
-                bottom = systemBars.bottom
-            )
-            WindowInsetsCompat.CONSUMED
-        }
-
-        // Firebase'den veriyi çekmeye başla ve listener'ı ekle
         startFetchingUsers()
     }
 
     private fun startFetchingUsers() {
-        // usersRef yoluna ValueEventListener'ı ekle
+        // Kullanıcıları Firebase'den almak için listener ekleniyor
         usersRef.addValueEventListener(userValueEventListener)
         Log.d("FirebaseData", "ValueEventListener eklendi, veri bekleniyor...")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        // Aktivite yok edilirken listener'ı kaldırmayı unutmayın!
-        // Bu bellek sızıntılarını önler ve gereksiz dinlemeyi durdurur.
+        // Aktivite yok edilirken dinleyiciyi kaldırıyoruz
         usersRef.removeEventListener(userValueEventListener)
         Log.d("FirebaseData", "ValueEventListener kaldırıldı.")
     }

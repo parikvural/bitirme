@@ -2,6 +2,7 @@
 package com.frkvrl.bitirme
 
 data class User(
+    val uid: String? = null,
     var ad: String? = null,
     var soyad: String? = null,
 ) {
