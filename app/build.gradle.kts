@@ -48,8 +48,8 @@ android {
 
 dependencies {
 
+    implementation(platform("com.google.firebase:firebase-bom:33.0.0")) // BOM versiyonunu kontrol edin ve güncelleyin
     implementation("com.google.firebase:firebase-database-ktx")
-    implementation(platform("com.google.firebase:firebase-bom:32.8.1"))
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -65,7 +65,8 @@ dependencies {
     implementation("com.google.zxing:core:3.4.1")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 
-
+    implementation ("com.github.bumptech.glide:glide:4.16.0") // Veya kullandığınız güncel versiyon
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
