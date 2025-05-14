@@ -2,10 +2,14 @@
 package com.frkvrl.bitirme
 
 data class User(
-    val uid: String? = null,
+    var uid: String? = null,
     var ad: String? = null,
     var soyad: String? = null,
-) {
+    var numara: Long? = null,
+    var bolum: String? = null,
+    var sinif: Int? = null
+)
+ {
     // Boş constructor, Firebase'in veri eşlemesi için gereklidir.
-    constructor() : this(null, null)
+    constructor() : this(null, null,null,null,null,null)
 }
