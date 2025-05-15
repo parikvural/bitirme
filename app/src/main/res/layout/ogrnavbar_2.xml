@@ -10,7 +10,7 @@
 
 
     <ImageButton
-        android:id="@+id/nav_ogrtana"
+        android:id="@+id/nav_ograna"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginEnd="64dp"
@@ -21,13 +21,13 @@
         android:src="@drawable/home"
         android:translationY="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/nav_ogrtqr"
+        app:layout_constraintEnd_toStartOf="@+id/nav_ogrqr"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.666" />
 
     <ImageButton
-        android:id="@+id/nav_ogrtqr"
+        android:id="@+id/nav_ogrqr"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_marginBottom="16dp"
@@ -42,7 +42,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
-        android:id="@+id/nav_settings"
+        android:id="@+id/nav_bilgi"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginStart="64dp"
@@ -54,7 +54,7 @@
         android:translationY="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/nav_ogrtqr"
+        app:layout_constraintStart_toEndOf="@+id/nav_ogrqr"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.666" />
 

@@ -14,7 +14,7 @@
     <!-- Bilgi butonu -->
 
     <ImageButton
-        android:id="@+id/nav_ogrtana"
+        android:id="@+id/nav_ograna"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:background="?android:attr/selectableItemBackground"
