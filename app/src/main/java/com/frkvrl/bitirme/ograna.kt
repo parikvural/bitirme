@@ -3,13 +3,10 @@ package com.frkvrl.bitirme
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-
 
 class ograna : ogrnavbar() {
 
@@ -19,47 +16,14 @@ class ograna : ogrnavbar() {
     private lateinit var textViewBolum: TextView
     private lateinit var textViewSinif: TextView
 
-
-
-
-
     private val database = Firebase.database("https://bitirme-cfd2e-default-rtdb.europe-west1.firebasedatabase.app")
     private val usersRef = database.getReference("users")
 
-    private val userValueEventListener = object : ValueEventListener {
-        override fun onDataChange(snapshot: DataSnapshot) {
-            val currentUid = FirebaseAuth.getInstance().currentUser?.uid
-
-            if (currentUid != null) {
-                for (userSnap in snapshot.children) {
-                    val user = userSnap.getValue(User::class.java)
-
-                    if (user != null && user.uid == currentUid) {
-                        // TextView'lere verileri yerleştir
-                        textViewAd.text = user.ad ?: "Ad yok"
-                        textViewSoyad.text = user.soyad ?: "Soyad yok"
-                        textViewNumara.text = user.numara.toString() ?: "Numara yok"
-                        textViewBolum.text = user.bolum ?: "Bölüm yok"
-                        textViewSinif.text = user.sinif.toString() ?: "Sınıf yok"
-
-                        Log.d("FirebaseData", "Kullanıcı bilgileri güncellendi.")
-                        break
-                    }
-                }
-            } else {
-                Log.w("FirebaseData", "Giriş yapan kullanıcı yok.")
-            }
-        }
-
-        override fun onCancelled(error: DatabaseError) {
-            Log.w("FirebaseData", "Veri alınamadı: ${error.toException()}")
-        }
-    }
+    private var userValueEventListener: ValueEventListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.ograna)
-
 
         // TextView'leri bağla
         textViewAd = findViewById(R.id.textView6)
@@ -72,11 +36,54 @@ class ograna : ogrnavbar() {
     }
 
     private fun startFetchingUser() {
-        usersRef.addValueEventListener(userValueEventListener)
+        val currentUid = FirebaseAuth.getInstance().currentUser?.uid
+
+        if (currentUid == null) {
+            Log.w("FirebaseData", "Giriş yapan kullanıcı yok.")
+            return
+        }
+
+        val currentUserRef = usersRef.child(currentUid)
+
+        userValueEventListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (!snapshot.exists()) {
+                    Log.w("FirebaseData", "Kullanıcı verisi bulunamadı.")
+                    textViewAd.text = "Ad yok"
+                    textViewSoyad.text = "Soyad yok"
+                    textViewNumara.text = "Numara yok"
+                    textViewBolum.text = "Bölüm yok"
+                    textViewSinif.text = "Sınıf yok"
+                    return
+                }
+
+                val user = snapshot.getValue(User::class.java)
+                if (user != null) {
+                    textViewAd.text = user.ad ?: "Ad yok"
+                    textViewSoyad.text = user.soyad ?: "Soyad yok"
+                    textViewNumara.text = user.numara?.toString() ?: "Numara yok"
+                    textViewBolum.text = user.bolum ?: "Bölüm yok"
+                    textViewSinif.text = user.sinif?.toString() ?: "Sınıf yok"
+
+                    Log.d("FirebaseData", "Kullanıcı bilgileri güncellendi.")
+                } else {
+                    Log.w("FirebaseData", "User objesi null.")
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.w("FirebaseData", "Veri alınamadı: ${error.toException()}")
+            }
+        }
+
+        currentUserRef.addValueEventListener(userValueEventListener as ValueEventListener)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        usersRef.removeEventListener(userValueEventListener)
+        val currentUid = FirebaseAuth.getInstance().currentUser?.uid
+        if (currentUid != null && userValueEventListener != null) {
+            usersRef.child(currentUid).removeEventListener(userValueEventListener as ValueEventListener)
+        }
     }
 }

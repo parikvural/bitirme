@@ -23,7 +23,7 @@
         <activity android:name="com.journeyapps.barcodescanner.CaptureActivity"
 
             android:theme="@style/zxing_CaptureTheme"
-            android:screenOrientation="landscape"
+            android:screenOrientation="portrait"
             tools:replace="android:screenOrientation"/>
         <activity
             android:name=".ogrtdevbilgi"
@@ -52,7 +52,8 @@
             android:label="@string/title_activity_main4" />
         <activity
             android:name=".ogrqr"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ograna"
             android:exported="false" />

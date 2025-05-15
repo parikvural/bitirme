@@ -1,15 +1,14 @@
-// com.frkvrl.bitirme içindeki bir dosya, örneğin User.kt
 package com.frkvrl.bitirme
 
 data class User(
-    var uid: String? = null,
-    var ad: String? = null,
-    var soyad: String? = null,
-    var numara: Long? = null,
-    var bolum: String? = null,
-    var sinif: Int? = null
+    val ad: String? = null,
+    val soyad: String? = null,
+    val numara: Long? = null,
+    val bolum: String? = null,
+    val sinif: Int? = null,
+    val rol: String? = null,
+    val verdigi_dersler: Map<String, Boolean>? = null,
+    val dersler: Map<String, Boolean>? = null,
 )
- {
-    // Boş constructor, Firebase'in veri eşlemesi için gereklidir.
-    constructor() : this(null, null,null,null,null,null)
-}
+
+
