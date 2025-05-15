@@ -7,17 +7,12 @@
     android:layout_height="match_parent"
     tools:context=".ogrbilgi">
 
-    <TextView
-        android:id="@+id/textView9"
-        android:layout_width="413dp"
-        android:layout_height="85dp"
-        android:background="#448AFF"
-        android:gravity="center"
-        android:text="Dokuz Eylül Üniversitesi"
-        android:textColor="#000000"
-        app:layout_constraintEnd_toEndOf="parent"
+    <include
+        android:id="@+id/universite_header"
+        layout="@layout/header"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/button2"
@@ -29,7 +24,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView9"
+        app:layout_constraintTop_toBottomOf="@+id/universite_header"
         app:layout_constraintVertical_bias="0.476" />
 
     <Button
@@ -41,7 +36,7 @@
         app:layout_constraintBottom_toTopOf="@+id/button2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView9"
+        app:layout_constraintTop_toBottomOf="@+id/universite_header"
         app:layout_constraintVertical_bias="0.756" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

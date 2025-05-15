@@ -1,6 +1,7 @@
 package com.frkvrl.bitirme
 
 import android.content.Intent
+import android.media.Image
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageButton
@@ -18,14 +19,14 @@ open class ogrnavbar : AppCompatActivity() {
     }
 
     private fun setupNavbar() {
-        findViewById<Button>(R.id.nav_ogrhome)?.setOnClickListener {
+        findViewById<ImageButton>(R.id.nav_ogrtana)?.setOnClickListener {
             if (this !is ograna) {
                 startActivity(Intent(this, ograna::class.java))
             }
         }
 
 
-        findViewById<ImageButton>(R.id.nav_qr)?.setOnClickListener {
+        findViewById<ImageButton>(R.id.ogrtders)?.setOnClickListener {
             val intent = Intent(this, ogrqr::class.java)
             startActivity(intent)
         }
@@ -34,7 +35,7 @@ open class ogrnavbar : AppCompatActivity() {
 
 
 
-        findViewById<Button>(R.id.nav_settings)?.setOnClickListener {
+        findViewById<ImageButton>(R.id.nav_settings)?.setOnClickListener {
             if (this !is ogrbilgi) {
                 startActivity(Intent(this, ogrbilgi::class.java))
             }

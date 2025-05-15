@@ -1,24 +1,49 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navbar"
     android:layout_width="match_parent"
-    android:layout_height="56dp"
-    android:background="#CCCCCC"
-    android:orientation="horizontal">
+    android:layout_height="80dp"
+    android:background="@drawable/navbar_background"
+    android:elevation="8dp"
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp">
 
-    <Button
+    <!-- Home butonu -->
+
+    <!-- Bilgi butonu -->
+
+    <ImageButton
         android:id="@+id/nav_ogrtana"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:text="Ana Sayfa" />
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:contentDescription="Ana Sayfa"
+        android:padding="0dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/home"
+        android:translationY="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/ogrtders"
+        app:layout_constraintHorizontal_bias="0.363"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.2" />
 
+    <ImageButton
+        android:id="@+id/ogrtders"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginEnd="56dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:contentDescription="Dersler"
+        android:padding="0dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/book"
+        android:translationY="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.2" />
 
-    <Button
-        android:id="@+id/nav_ogrtders"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:text="Bilgilerim" />
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

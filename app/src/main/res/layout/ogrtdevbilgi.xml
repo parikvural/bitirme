@@ -7,15 +7,11 @@
     android:layout_height="match_parent"
     tools:context=".ogrtdevbilgi">
 
-    <TextView
-        android:id="@+id/textView13"
-        android:layout_width="413dp"
-        android:layout_height="85dp"
-        android:background="#448AFF"
-        android:gravity="center"
-        android:text="Dokuz Eylül Üniversitesi"
-        android:textColor="#000000"
+    <include
+        android:id="@+id/universite_header"
+        layout="@layout/header"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="-1dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
