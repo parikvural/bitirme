@@ -9,6 +9,7 @@ data class User(
     val rol: String? = null,
     val verdigi_dersler: Map<String, Boolean>? = null,
     val dersler: Map<String, Boolean>? = null,
+    val devamsizliklar: Map<String, Boolean>? = null
 )
 
 

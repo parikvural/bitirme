@@ -22,6 +22,7 @@ class ograna : ogrnavbar() {
     private var userValueEventListener: ValueEventListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.ograna)
 
@@ -68,6 +69,7 @@ class ograna : ogrnavbar() {
                     Log.d("FirebaseData", "Kullanıcı bilgileri güncellendi.")
                 } else {
                     Log.w("FirebaseData", "User objesi null.")
+
                 }
             }
 
