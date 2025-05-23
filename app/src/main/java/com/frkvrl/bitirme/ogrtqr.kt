@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
+import android.util.Log
 import com.google.firebase.database.FirebaseDatabase
 import java.text.SimpleDateFormat
 import java.util.*
@@ -20,15 +21,29 @@ class ogrtqr : ogrtnavbar() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.ogrtqr)
 
-        lessonCode = intent.getStringExtra("dersID") ?: "BILINMEYEN"
-        selectedDate = intent.getStringExtra("secilenTarih") ?: getTodayDate()
+        try {
+            lessonCode = intent.getStringExtra("dersID") ?: "BILINMEYEN"
+            selectedDate = intent.getStringExtra("secilenTarih") ?: getTodayDate()
+            Log.d("ogrtqr", "onCreate - lessonCode: $lessonCode, selectedDate: $selectedDate")
+        } catch (e: Exception) {
+            Log.e("ogrtqr", "Hata oluştu: ${e.message}", e)
+            Toast.makeText(this, "Başlatma hatası: ${e.message}", Toast.LENGTH_LONG).show()
+        }
 
         val btnDatePicker = findViewById<Button>(R.id.btnDatePicker)
         btnDatePicker.setOnClickListener {
+            Log.d("ogrtqr", "Date picker butonuna tıklandı")
             showDatePickerDialog()
         }
 
         findViewById<Button>(R.id.button5).visibility = View.GONE
+
+        val showAllAbsencesButton = findViewById<Button>(R.id.button2)
+        showAllAbsencesButton.setOnClickListener {
+            val intent = Intent(this, DevamsizlikListesiActivity::class.java)
+            intent.putExtra("dersID", lessonCode)
+            startActivity(intent)
+        }
     }
 
     private fun showDatePickerDialog() {
@@ -61,9 +76,7 @@ class ogrtqr : ogrtnavbar() {
                 Toast.makeText(this, "Yoklama zaten mevcut, kontrol ediliyor...", Toast.LENGTH_SHORT).show()
                 checkIfDayIsEmptyAndProceed()
             } else {
-                Toast.makeText(this, "Yoklama yok, oluşturuluyor...", Toast.LENGTH_SHORT).show()
                 val lessonStudentsRef = database.getReference("lessons").child(lessonCode).child("ogrenciler")
-
                 lessonStudentsRef.get().addOnSuccessListener { studentsSnapshot ->
                     if (studentsSnapshot.exists()) {
                         val attendanceData = mutableMapOf<String, Boolean>()
@@ -71,8 +84,6 @@ class ogrtqr : ogrtnavbar() {
                             val studentId = student.key ?: continue
                             attendanceData[studentId] = false
                         }
-                        Toast.makeText(this, "Öğrenciler alındı, yoklama oluşturuluyor...", Toast.LENGTH_SHORT).show()
-
                         attendanceRef.setValue(attendanceData)
                             .addOnSuccessListener {
                                 Toast.makeText(this, "Yoklama başarıyla oluşturuldu.", Toast.LENGTH_SHORT).show()
@@ -80,7 +91,6 @@ class ogrtqr : ogrtnavbar() {
                             }
                             .addOnFailureListener { e ->
                                 Toast.makeText(this, "Yoklama oluşturulamadı: ${e.message}", Toast.LENGTH_LONG).show()
-                                e.printStackTrace()
                             }
                     } else {
                         Toast.makeText(this, "Dersin öğrenci listesi bulunamadı!", Toast.LENGTH_SHORT).show()
@@ -113,7 +123,6 @@ class ogrtqr : ogrtnavbar() {
                     goToStudentInfo()
                 } else {
                     Toast.makeText(this, "Bu tarihte zaten yoklama alınmış.", Toast.LENGTH_SHORT).show()
-                    return@addOnSuccessListener
                 }
             } else {
                 Toast.makeText(this, "Yoklama verisi yok, devam ediliyor...", Toast.LENGTH_SHORT).show()
@@ -125,7 +134,6 @@ class ogrtqr : ogrtnavbar() {
     }
 
     private fun goToStudentInfo() {
-        Toast.makeText(this, "Ekrana geçiliyor: $selectedDate, Ders: $lessonCode", Toast.LENGTH_SHORT).show()
         val intent = Intent(this, ogrtdevbilgi::class.java)
         intent.putExtra("secilenTarih", selectedDate)
         intent.putExtra("dersID", lessonCode)

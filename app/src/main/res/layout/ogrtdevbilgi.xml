@@ -24,7 +24,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"/>
 
-    <!-- Eğer başka view eklemek istiyorsan, buraya ekle. -->
-    <!-- app:layout_constraintTop_toBottomOf="@+id/qrCodeImageView" bu satırı kaldırdım çünkü tek başına olmamalı -->
-
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Yoklamayı Görüntüle"
+        app:layout_constraintTop_toBottomOf="@id/qrCodeImageView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
