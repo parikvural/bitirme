@@ -2,6 +2,7 @@ package com.frkvrl.bitirme
 
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.widget.EditText
@@ -11,10 +12,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 private lateinit var auth: FirebaseAuth
 
 class giris : AppCompatActivity() {
+
+    private lateinit var firestore: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +32,22 @@ class giris : AppCompatActivity() {
         }
 
         auth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance()
+
+        // Eğer kullanıcı zaten giriş yaptıysa doğrudan ana ekrana yönlendir
+        auth.currentUser?.let { user ->
+            val email = user.email ?: return@let
+            when {
+                email.endsWith("@ogr.edu.deu.tr") -> {
+                    startActivity(Intent(this, ograna::class.java))
+                    finish()
+                }
+                email.endsWith("@gmail.com") -> {
+                    startActivity(Intent(this, ogrtana::class.java))
+                    finish()
+                }
+            }
+        }
     }
 
     fun giris(view: View) {
@@ -44,39 +64,66 @@ class giris : AppCompatActivity() {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    Log.d("Giris", "signInWithEmail:success")
                     val user = auth.currentUser
                     val userEmail = user?.email
+                    val uid = user?.uid
+                    val deviceId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
 
-                    if (userEmail != null) {
-                        when {
-                            userEmail.endsWith("@ogr.edu.deu.tr") -> {
-                                // Öğrenci
-                                val intent = Intent(this, ograna::class.java)
-                                startActivity(intent)
-                                finish()
+                    if (userEmail != null && uid != null) {
+                        // Cihaz bu kullanıcıya ait mi?
+                        firestore.collection("device_links")
+                            .document(deviceId)
+                            .get()
+                            .addOnSuccessListener { doc ->
+                                if (doc.exists()) {
+                                    val savedUid = doc.getString("uid")
+                                    if (savedUid == uid) {
+                                        yonlendir(userEmail)
+                                    } else {
+                                        Toast.makeText(this, "Bu cihaz sadece ilk giriş yapan kullanıcıya özeldir.", Toast.LENGTH_LONG).show()
+                                        auth.signOut()
+                                    }
+                                } else {
+                                    // İlk kez giriş yapılıyor, eşleştirme kaydediliyor
+                                    firestore.collection("device_links")
+                                        .document(deviceId)
+                                        .set(mapOf("uid" to uid))
+                                        .addOnSuccessListener {
+                                            yonlendir(userEmail)
+                                        }
+                                        .addOnFailureListener {
+                                            Toast.makeText(this, "Cihaz eşleştirme başarısız.", Toast.LENGTH_SHORT).show()
+                                            auth.signOut()
+                                        }
+                                }
                             }
-                            userEmail.endsWith("@gmail.com") -> {
-                                // Öğretmen
-                                val intent = Intent(this, ogrtana::class.java)
-                                startActivity(intent)
-                                finish()
-                            }
-                            else -> {
-                                Toast.makeText(this, "E-posta adresi tanınmıyor.", Toast.LENGTH_LONG).show()
-                                auth.signOut()
-                            }
-                        }
+
                     } else {
-                        Toast.makeText(this, "E-posta alınamadı.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Kullanıcı bilgisi alınamadı.", Toast.LENGTH_SHORT).show()
                         auth.signOut()
                     }
 
                 } else {
-                    Log.w("Giris", "signInWithEmail:failure", task.exception)
                     Toast.makeText(this, "Giriş başarısız: ${task.exception?.localizedMessage}",
                         Toast.LENGTH_LONG).show()
                 }
             }
+    }
+
+    private fun yonlendir(userEmail: String) {
+        when {
+            userEmail.endsWith("@ogr.edu.deu.tr") -> {
+                startActivity(Intent(this, ograna::class.java))
+                finish()
+            }
+            userEmail.endsWith("@gmail.com") -> {
+                startActivity(Intent(this, ogrtana::class.java))
+                finish()
+            }
+            else -> {
+                Toast.makeText(this, "E-posta adresi tanınmıyor.", Toast.LENGTH_LONG).show()
+                auth.signOut()
+            }
+        }
     }
 }
