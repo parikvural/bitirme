@@ -18,35 +18,26 @@ class ogrbilgi : ogrnavbar() {
         setContentView(R.layout.ogrbilgi)
 
         listView = findViewById(R.id.listView)
-        adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, ArrayList(dersMap.keys))
+        adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, ArrayList())
         listView.adapter = adapter
 
         val uid = FirebaseAuth.getInstance().currentUser?.uid
-        if (!uid.isNullOrEmpty()) {
+        if (uid != null) {
             val dbRef = FirebaseDatabase.getInstance("https://bitirme-cfd2e-default-rtdb.europe-west1.firebasedatabase.app/")
-            val lessonsRef = dbRef.getReference("lessons")
+            val userSinifRef = dbRef.getReference("users").child(uid).child("sinif")
 
-            lessonsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            userSinifRef.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    dersMap.clear()
-
-                    for (lessonSnapshot in snapshot.children) {
-                        val dersId = lessonSnapshot.key
-                        val dersAdi = lessonSnapshot.child("ad").getValue(String::class.java)
-                        val ogrenciVar = lessonSnapshot.child("ogrenciler").child(uid).getValue(Boolean::class.java)
-
-                        if (dersAdi != null && ogrenciVar == true && dersId != null) {
-                            dersMap[dersAdi] = dersId
-                        }
+                    val kullaniciSinif = snapshot.getValue(String::class.java)
+                    if (kullaniciSinif != null) {
+                        dersleriYukle(uid, kullaniciSinif)
+                    } else {
+                        Log.e("FirebaseError", "Sınıf bilgisi alınamadı")
                     }
-
-                    adapter.clear()
-                    adapter.addAll(dersMap.keys)
-                    adapter.notifyDataSetChanged()
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Log.e("FirebaseError", "Ders listesi alınamadı: ${error.message}")
+                    Log.e("FirebaseError", "Kullanıcı sınıfı alınamadı: ${error.message}")
                 }
             })
         }
@@ -55,9 +46,41 @@ class ogrbilgi : ogrnavbar() {
             val dersAdi = adapter.getItem(position)
             val dersId = dersMap[dersAdi]
 
-            val intent = Intent(this, ogrdevam::class.java)
+            val intent = Intent(this@ogrbilgi, ogrdevam::class.java)
             intent.putExtra("dersId", dersId)
+            intent.putExtra("sinif", "bilinmiyor") // Sınıf bilgisini intent'e ekleyin (gerekliyse)
             startActivity(intent)
         }
+    }
+
+    private fun dersleriYukle(uid: String, sinif: String) {
+        val dbRef = FirebaseDatabase.getInstance("https://bitirme-cfd2e-default-rtdb.europe-west1.firebasedatabase.app/")
+        val sinifRef = dbRef.getReference("dersler").child(sinif)
+
+        sinifRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                dersMap.clear()
+                val yeniDersler = ArrayList<String>()
+
+                for (dersSnapshot in snapshot.children) {
+                    val dersId = dersSnapshot.key
+                    val dersAdi = dersSnapshot.child("ad").getValue(String::class.java)
+                    val ogrenciVar = dersSnapshot.child("ogrenciler").child(uid).getValue(Boolean::class.java) == true
+
+                    if (dersAdi != null && dersId != null && ogrenciVar) {
+                        dersMap[dersAdi] = dersId
+                        yeniDersler.add(dersAdi)
+                    }
+                }
+
+                adapter.clear()
+                adapter.addAll(yeniDersler)
+                adapter.notifyDataSetChanged()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("FirebaseError", "Dersler alınamadı: ${error.message}")
+            }
+        })
     }
 }

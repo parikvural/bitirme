@@ -47,6 +47,7 @@ android {
 }
 
 dependencies {
+    implementation ("com.google.android.material:material:1.11.0")
     implementation ("com.google.android.gms:play-services-location:21.0.1")
     implementation(platform("com.google.firebase:firebase-bom:33.0.0")) // BOM versiyonunu kontrol edin ve güncelleyin
     implementation("com.google.firebase:firebase-database-ktx")

@@ -1,49 +1,41 @@
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navbar"
     android:layout_width="match_parent"
     android:layout_height="80dp"
-    android:background="@drawable/navbar_background"
+    android:background="#1A1A1A"
     android:elevation="8dp"
     android:paddingStart="24dp"
     android:paddingEnd="24dp">
 
-    <!-- Home butonu -->
-
-    <!-- Bilgi butonu -->
-
     <ImageButton
         android:id="@+id/nav_ograna"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:background="?android:attr/selectableItemBackground"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
         android:contentDescription="Ana Sayfa"
-        android:padding="0dp"
         android:scaleType="fitCenter"
         android:src="@drawable/home"
-        android:translationY="12dp"
+        app:tint="#9E9E9E"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/ogrtders"
-        app:layout_constraintHorizontal_bias="0.363"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.2" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
         android:id="@+id/ogrtders"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginEnd="56dp"
-        android:background="?android:attr/selectableItemBackground"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
         android:contentDescription="Dersler"
-        android:padding="0dp"
         android:scaleType="fitCenter"
         android:src="@drawable/book"
-        android:translationY="12dp"
+        app:tint="#9E9E9E"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.2" />
+        app:layout_constraintStart_toEndOf="@+id/nav_ograna"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

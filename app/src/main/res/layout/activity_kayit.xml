@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrollView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="#0D0907"
+    android:padding="32dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kayıt Ol"
+            android:textSize="32sp"
+            android:textColor="#F0EFE7"
+            android:textStyle="bold"
+            android:layout_marginBottom="32dp"
+            android:fontFamily="sans-serif-medium" />
+
+        <EditText
+            android:id="@+id/etAd"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:hint="Ad"
+            android:background="@drawable/rounded_edittext_light"
+            android:textColorHint="#9E9E9E"
+            android:textColor="#F0EFE7"
+            android:paddingHorizontal="16dp"
+            android:layout_marginBottom="16dp"
+            android:inputType="textPersonName"
+            android:fontFamily="sans-serif" />
+
+        <EditText
+            android:id="@+id/etSoyad"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:hint="Soyad"
+            android:background="@drawable/rounded_edittext_light"
+            android:textColorHint="#9E9E9E"
+            android:textColor="#F0EFE7"
+            android:paddingHorizontal="16dp"
+            android:layout_marginBottom="16dp"
+            android:inputType="textPersonName"
+            android:fontFamily="sans-serif" />
+
+        <EditText
+            android:id="@+id/etNumara"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:hint="Öğrenci Numarası"
+            android:background="@drawable/rounded_edittext_light"
+            android:textColorHint="#9E9E9E"
+            android:textColor="#F0EFE7"
+            android:paddingHorizontal="16dp"
+            android:layout_marginBottom="24dp"
+            android:inputType="number"
+            android:fontFamily="sans-serif" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bölüm"
+            android:textColor="#F0EFE7"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="sans-serif-medium" />
+
+        <Spinner
+            android:id="@+id/spinnerBolum"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="@drawable/rounded_edittext_light"
+            android:layout_marginBottom="24dp"
+            android:textColor="#F0EFE7" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sınıf"
+            android:textColor="#F0EFE7"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="sans-serif-medium" />
+
+        <Spinner
+            android:id="@+id/spinnerSinif"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="@drawable/rounded_edittext_light"
+            android:layout_marginBottom="24dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ders Seçimi"
+            android:textColor="#F0EFE7"
+            android:textSize="16sp"
+            android:layout_marginBottom="12dp"
+            android:fontFamily="sans-serif-medium" />
+
+        <LinearLayout
+            android:id="@+id/layoutDersler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/rounded_edittext_light"
+            android:padding="16dp"
+            android:textStyle="bold"
+            android:layout_marginBottom="32dp" />
+
+        <Button
+            android:id="@+id/btnKayitOl"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Kayıt Ol"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/rounded_button_large"
+            android:fontFamily="sans-serif-medium"
+            android:textSize="16sp"
+            android:backgroundTint="#4FA2F0" />
+
+    </LinearLayout>
+</ScrollView>

@@ -3,127 +3,135 @@ package com.frkvrl.bitirme
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.View
-import android.widget.EditText
-import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-
-private lateinit var auth: FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 class giris : AppCompatActivity() {
 
+    private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
+    private lateinit var realtimeDb: FirebaseDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.giris)
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
 
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
+        realtimeDb = FirebaseDatabase.getInstance("https://bitirme-cfd2e-default-rtdb.europe-west1.firebasedatabase.app/")
 
-        // Eğer kullanıcı zaten giriş yaptıysa doğrudan ana ekrana yönlendir
-        auth.currentUser?.let { user ->
-            val email = user.email ?: return@let
-            when {
-                email.endsWith("@ogr.edu.deu.tr") -> {
-                    startActivity(Intent(this, ograna::class.java))
-                    finish()
-                }
-                email.endsWith("@gmail.com") -> {
-                    startActivity(Intent(this, ogrtana::class.java))
-                    finish()
+        val emailEdit = findViewById<EditText>(R.id.edit)
+        val passwordEdit = findViewById<EditText>(R.id.edit2)
+        val btnKayit = findViewById<TextView>(R.id.button3)
+        val btnSifremiUnuttum = findViewById<TextView>(R.id.textView8)
+
+        btnKayit.setOnClickListener {
+            startActivity(Intent(this, kayit::class.java))
+        }
+
+        btnSifremiUnuttum.setOnClickListener {
+            val email = emailEdit.text.toString().trim()
+            if (email.isEmpty()) {
+                Toast.makeText(this, "Lütfen e-posta girin", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            auth.fetchSignInMethodsForEmail(email).addOnCompleteListener { task ->
+                if (task.isSuccessful && task.result.signInMethods?.isNotEmpty() == true) {
+                    auth.sendPasswordResetEmail(email).addOnSuccessListener {
+                        Toast.makeText(this, "Şifre sıfırlama bağlantısı gönderildi.", Toast.LENGTH_LONG).show()
+                    }.addOnFailureListener {
+                        Toast.makeText(this, "Gönderim başarısız: ${it.message}", Toast.LENGTH_LONG).show()
+                    }
+                } else {
+                    Toast.makeText(this, "Bu e-posta ile kayıtlı kullanıcı bulunamadı.", Toast.LENGTH_SHORT).show()
                 }
             }
+        }
+
+        // Eğer kullanıcı zaten giriş yaptıysa direkt yönlendir
+        auth.currentUser?.let { user ->
+            val uid = user.uid
+            kontrolVeYonlendir(uid)
         }
     }
 
     fun giris(view: View) {
-        val emailEditText = findViewById<EditText>(R.id.edit)
-        val passwordEditText = findViewById<EditText>(R.id.edit2)
-        val email = emailEditText.text.toString().trim()
-        val password = passwordEditText.text.toString().trim()
+        val email = findViewById<EditText>(R.id.edit).text.toString().trim()
+        val password = findViewById<EditText>(R.id.edit2).text.toString().trim()
 
         if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Lütfen email ve şifrenizi girin.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Email ve şifre giriniz", Toast.LENGTH_SHORT).show()
             return
         }
 
         auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    val user = auth.currentUser
-                    val userEmail = user?.email
-                    val uid = user?.uid
-                    val deviceId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
-
-                    if (userEmail != null && uid != null) {
-                        // Cihaz bu kullanıcıya ait mi?
-                        firestore.collection("device_links")
-                            .document(deviceId)
-                            .get()
-                            .addOnSuccessListener { doc ->
-                                if (doc.exists()) {
-                                    val savedUid = doc.getString("uid")
-                                    if (savedUid == uid) {
-                                        yonlendir(userEmail)
-                                    } else {
-                                        Toast.makeText(this, "Bu cihaz sadece ilk giriş yapan kullanıcıya özeldir.", Toast.LENGTH_LONG).show()
-                                        auth.signOut()
-                                    }
-                                } else {
-                                    // İlk kez giriş yapılıyor, eşleştirme kaydediliyor
-                                    firestore.collection("device_links")
-                                        .document(deviceId)
-                                        .set(mapOf("uid" to uid))
-                                        .addOnSuccessListener {
-                                            yonlendir(userEmail)
-                                        }
-                                        .addOnFailureListener {
-                                            Toast.makeText(this, "Cihaz eşleştirme başarısız.", Toast.LENGTH_SHORT).show()
-                                            auth.signOut()
-                                        }
-                                }
-                            }
-
-                    } else {
-                        Toast.makeText(this, "Kullanıcı bilgisi alınamadı.", Toast.LENGTH_SHORT).show()
-                        auth.signOut()
-                    }
-
+            .addOnSuccessListener { result ->
+                val uid = result.user?.uid
+                if (uid != null) {
+                    cihazKontrolVeKayit(uid)
                 } else {
-                    Toast.makeText(this, "Giriş başarısız: ${task.exception?.localizedMessage}",
-                        Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Kullanıcı bilgisi alınamadı.", Toast.LENGTH_SHORT).show()
                 }
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Giriş başarısız: ${it.message}", Toast.LENGTH_LONG).show()
             }
     }
 
-    private fun yonlendir(userEmail: String) {
-        when {
-            userEmail.endsWith("@ogr.edu.deu.tr") -> {
-                startActivity(Intent(this, ograna::class.java))
-                finish()
-            }
-            userEmail.endsWith("@gmail.com") -> {
-                startActivity(Intent(this, ogrtana::class.java))
-                finish()
-            }
-            else -> {
-                Toast.makeText(this, "E-posta adresi tanınmıyor.", Toast.LENGTH_LONG).show()
+    private fun cihazKontrolVeKayit(uid: String) {
+        val deviceId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
+        val cihazRef = firestore.collection("device_links").document(deviceId)
+
+        cihazRef.get().addOnSuccessListener { doc ->
+            val kayitliUid = doc.getString("uid")
+
+            if (kayitliUid == null) {
+                // İlk kez giriş yapan kullanıcı için cihaz kaydı yapılıyor
+                cihazRef.set(mapOf("uid" to uid)).addOnSuccessListener {
+                    kontrolVeYonlendir(uid)
+                }.addOnFailureListener {
+                    Toast.makeText(this, "Cihaz eşleştirme kaydı başarısız!", Toast.LENGTH_SHORT).show()
+                }
+            } else if (kayitliUid == uid) {
+                // Aynı kullanıcı tekrar giriş yapıyor
+                kontrolVeYonlendir(uid)
+            } else {
+                // Başka kullanıcı bu cihazdan giriş yapamaz
+                Toast.makeText(this, "Bu cihaz başka kullanıcıya kayıtlı!", Toast.LENGTH_LONG).show()
                 auth.signOut()
             }
+        }.addOnFailureListener {
+            Toast.makeText(this, "Firestore hatası: ${it.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun kontrolVeYonlendir(uid: String) {
+        val userRef = realtimeDb.getReference("users/$uid")
+
+        userRef.get().addOnSuccessListener { snapshot ->
+            val rol = snapshot.child("rol").getValue(String::class.java)
+
+            when (rol) {
+                "Öğrenci" -> {
+                    startActivity(Intent(this, ograna::class.java))
+                    finish()
+                }
+                "Öğretmen" -> {
+                    startActivity(Intent(this, ogrtana::class.java))
+                    finish()
+                }
+                else -> {
+                    Toast.makeText(this, "Kullanıcı rolü tanımsız", Toast.LENGTH_SHORT).show()
+                    auth.signOut()
+                }
+            }
+        }.addOnFailureListener {
+            Toast.makeText(this, "Kullanıcı bilgisi alınamadı: ${it.message}", Toast.LENGTH_SHORT).show()
         }
     }
 }

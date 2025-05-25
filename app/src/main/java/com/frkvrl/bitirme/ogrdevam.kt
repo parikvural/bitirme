@@ -16,11 +16,12 @@ class ogrdevam : ogrnavbar() {
         textView = findViewById(R.id.textViewDersBilgi)
 
         val dersId = intent.getStringExtra("dersId")
+        val sinif = intent.getStringExtra("sinif")
         val uid = FirebaseAuth.getInstance().currentUser?.uid
 
-        if (dersId != null && uid != null) {
+        if (dersId != null && sinif != null && uid != null) {
             val database = FirebaseDatabase.getInstance("https://bitirme-cfd2e-default-rtdb.europe-west1.firebasedatabase.app/")
-            val attendanceRef = database.getReference("attendances/$dersId")
+            val attendanceRef = database.getReference("attendances").child(sinif).child(dersId)
 
             attendanceRef.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -42,7 +43,7 @@ class ogrdevam : ogrnavbar() {
                 }
             })
         } else {
-            textView.text = "Ders bilgisi alınamadı."
+            textView.text = "Ders veya sınıf bilgisi alınamadı."
         }
     }
 }

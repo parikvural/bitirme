@@ -8,7 +8,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -21,6 +21,9 @@
         android:theme="@style/Theme.Bitirme"
         tools:targetApi="31">
         <activity
+            android:name=".kayit"
+            android:exported="false" />
+        <activity
             android:name=".yoklamalistesi"
             android:exported="false" />
         <activity
@@ -32,10 +35,10 @@
             android:theme="@style/zxing_CaptureTheme"
             tools:replace="android:screenOrientation" />
         <activity
-            android:name=".ogrtdevbilgi"
+            android:name=".ogrtqr"
             android:exported="false" />
         <activity
-            android:name=".ogrtqr"
+            android:name=".ogrtbilgi"
             android:exported="false" />
         <activity
             android:name=".ogrtders"

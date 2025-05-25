@@ -2,141 +2,120 @@ package com.frkvrl.bitirme
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.Toast
+import android.os.Handler
 import android.util.Log
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.Toast
 import com.google.firebase.database.FirebaseDatabase
+import com.journeyapps.barcodescanner.BarcodeEncoder
 import java.text.SimpleDateFormat
 import java.util.*
-import android.app.DatePickerDialog
-import android.view.View
-import android.widget.DatePicker
 
 class ogrtqr : ogrtnavbar() {
 
+    private lateinit var qrCodeImageView: ImageView
+    private lateinit var handler: Handler
     private lateinit var lessonCode: String
-    private lateinit var selectedDate: String
+    private lateinit var sinif: String
+    private var runnable: Runnable? = null
+    private var attendanceInitialized = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.ogrtqr)
 
-        try {
-            lessonCode = intent.getStringExtra("dersID") ?: "BILINMEYEN"
-            selectedDate = intent.getStringExtra("secilenTarih") ?: getTodayDate()
-            Log.d("ogrtqr", "onCreate - lessonCode: $lessonCode, selectedDate: $selectedDate")
-        } catch (e: Exception) {
-            Log.e("ogrtqr", "Hata oluştu: ${e.message}", e)
-            Toast.makeText(this, "Başlatma hatası: ${e.message}", Toast.LENGTH_LONG).show()
-        }
+        lessonCode = intent.getStringExtra("dersID") ?: "BILINMEYEN"
+        sinif = intent.getStringExtra("sinif") ?: "BILINMIYOR"
+        qrCodeImageView = findViewById(R.id.qrCodeImageView)
+        handler = Handler()
 
-        val btnDatePicker = findViewById<Button>(R.id.btnDatePicker)
-        btnDatePicker.setOnClickListener {
-            Log.d("ogrtqr", "Date picker butonuna tıklandı")
-            showDatePickerDialog()
-        }
+        startQRCodeUpdater()
 
-        findViewById<Button>(R.id.button5).visibility = View.GONE
-
-        val showAllAbsencesButton = findViewById<Button>(R.id.button2)
-        showAllAbsencesButton.setOnClickListener {
-            val intent = Intent(this, DevamsizlikListesiActivity::class.java)
+        val viewAttendanceButton: Button = findViewById(R.id.button2)
+        viewAttendanceButton.setOnClickListener {
+            val intent = Intent(this, yoklamalistesi::class.java)
             intent.putExtra("dersID", lessonCode)
+            intent.putExtra("sinif", sinif)
             startActivity(intent)
         }
     }
 
-    private fun showDatePickerDialog() {
-        val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
+    private fun startQRCodeUpdater() {
+        runnable = object : Runnable {
+            override fun run() {
+                updateQRCode()
 
-        val datePickerDialog = DatePickerDialog(this,
-            { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDay: Int ->
-                selectedDate = String.format("%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay)
-                Toast.makeText(this, "Seçilen tarih: $selectedDate", Toast.LENGTH_SHORT).show()
-                createAttendanceIfNotExistsAndProceed()
-            }, year, month, day)
+                if (!attendanceInitialized) {
+                    initializeAttendanceForToday(lessonCode)
+                    attendanceInitialized = true
+                }
 
-        datePickerDialog.show()
+                handler.postDelayed(this, 5000)
+            }
+        }
+        handler.post(runnable!!)
     }
 
-    private fun getTodayDate(): String {
-        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        return sdf.format(Date())
+    private fun updateQRCode() {
+        try {
+            val token = UUID.randomUUID().toString()
+            val timestamp = System.currentTimeMillis()
+            val qrContent = "$token|$timestamp"
+
+            val qrRef = FirebaseDatabase.getInstance("https://bitirme-cfd2e-default-rtdb.europe-west1.firebasedatabase.app/")
+                .getReference("qrCodes/current")
+
+            val qrData = mapOf(
+                "value" to token,
+                "timestamp" to timestamp,
+                "lessonCode" to lessonCode
+            )
+
+            qrRef.setValue(qrData)
+
+            val barcodeEncoder = BarcodeEncoder()
+            val bitmap = barcodeEncoder.encodeBitmap(qrContent, com.google.zxing.BarcodeFormat.QR_CODE, 500, 500)
+            qrCodeImageView.setImageBitmap(bitmap)
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "QR kod oluşturulamadı: ${e.message}", Toast.LENGTH_LONG).show()
+        }
     }
 
-    private fun createAttendanceIfNotExistsAndProceed() {
-        val database = FirebaseDatabase.getInstance("https://bitirme-cfd2e-default-rtdb.europe-west1.firebasedatabase.app")
-        val attendanceRef = database.getReference("attendances").child(lessonCode).child(selectedDate)
+    private fun initializeAttendanceForToday(lessonCode: String) {
+        val db = FirebaseDatabase.getInstance("https://bitirme-cfd2e-default-rtdb.europe-west1.firebasedatabase.app/")
 
-        attendanceRef.get().addOnSuccessListener { snapshot ->
-            if (snapshot.exists()) {
-                Toast.makeText(this, "Yoklama zaten mevcut, kontrol ediliyor...", Toast.LENGTH_SHORT).show()
-                checkIfDayIsEmptyAndProceed()
-            } else {
-                val lessonStudentsRef = database.getReference("lessons").child(lessonCode).child("ogrenciler")
-                lessonStudentsRef.get().addOnSuccessListener { studentsSnapshot ->
-                    if (studentsSnapshot.exists()) {
-                        val attendanceData = mutableMapOf<String, Boolean>()
-                        for (student in studentsSnapshot.children) {
-                            val studentId = student.key ?: continue
-                            attendanceData[studentId] = false
-                        }
-                        attendanceRef.setValue(attendanceData)
-                            .addOnSuccessListener {
-                                Toast.makeText(this, "Yoklama başarıyla oluşturuldu.", Toast.LENGTH_SHORT).show()
-                                checkIfDayIsEmptyAndProceed()
-                            }
-                            .addOnFailureListener { e ->
-                                Toast.makeText(this, "Yoklama oluşturulamadı: ${e.message}", Toast.LENGTH_LONG).show()
-                            }
+        // Firebase yapınıza göre: dersler/sinif/dersKodu/ogrenciler
+        val lessonStudentsRef = db.getReference("dersler/$sinif/$lessonCode/ogrenciler")
+        val todayDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        val attendanceRef = db.getReference("attendances/$sinif/$lessonCode/$todayDate")
+
+        lessonStudentsRef.get().addOnSuccessListener { snapshot ->
+            val updates = mutableMapOf<String, Any?>()
+
+            // Sadece true değerine sahip öğrencileri al
+            for (student in snapshot.children) {
+                val value = student.getValue(Boolean::class.java)
+                if (value == true) {
+                    student.key?.let { updates[it] = false }
+                }
+            }
+
+            if (updates.isNotEmpty()) {
+                attendanceRef.updateChildren(updates).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Log.d("ogrtqr", "Yoklama başarıyla sıfırlandı. ${updates.size} öğrenci için.")
                     } else {
-                        Toast.makeText(this, "Dersin öğrenci listesi bulunamadı!", Toast.LENGTH_SHORT).show()
+                        Log.e("ogrtqr", "Yoklama sıfırlama başarısız: ${task.exception}")
                     }
-                }.addOnFailureListener {
-                    Toast.makeText(this, "Ders öğrencileri alınamadı: ${it.message}", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }.addOnFailureListener {
-            Toast.makeText(this, "Veri alınamadı: ${it.message}", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun checkIfDayIsEmptyAndProceed() {
-        val database = FirebaseDatabase.getInstance("https://bitirme-cfd2e-default-rtdb.europe-west1.firebasedatabase.app")
-        val dateRef = database.getReference("attendances").child(lessonCode).child(selectedDate)
-
-        dateRef.get().addOnSuccessListener { snapshot ->
-            if (snapshot.exists()) {
-                var allFalse = true
-                for (child in snapshot.children) {
-                    val value = child.getValue(Boolean::class.java) ?: false
-                    if (value) {
-                        allFalse = false
-                        break
-                    }
-                }
-                if (allFalse) {
-                    Toast.makeText(this, "Yoklama boş, devam ediliyor...", Toast.LENGTH_SHORT).show()
-                    goToStudentInfo()
-                } else {
-                    Toast.makeText(this, "Bu tarihte zaten yoklama alınmış.", Toast.LENGTH_SHORT).show()
                 }
             } else {
-                Toast.makeText(this, "Yoklama verisi yok, devam ediliyor...", Toast.LENGTH_SHORT).show()
-                goToStudentInfo()
+                Log.d("ogrtqr", "Güncellenecek öğrenci bulunamadı.")
             }
         }.addOnFailureListener {
-            Toast.makeText(this, "Veri alınamadı: ${it.message}", Toast.LENGTH_SHORT).show()
+            Log.e("ogrtqr", "Öğrenciler alınamadı: ${it.message}")
         }
-    }
-
-    private fun goToStudentInfo() {
-        val intent = Intent(this, ogrtdevbilgi::class.java)
-        intent.putExtra("secilenTarih", selectedDate)
-        intent.putExtra("dersID", lessonCode)
-        startActivity(intent)
     }
 }

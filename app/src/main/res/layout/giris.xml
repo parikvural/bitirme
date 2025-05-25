@@ -1,94 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/girisLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".giris">
+    android:background="#262626"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:padding="32dp">
+
+    <TextView
+        android:id="@+id/girisBaslik"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Giriş"
+        android:textColor="#FFFFFF"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="48dp" />
 
     <EditText
         android:id="@+id/edit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="E-Posta"
-        android:inputType="text"
-        app:layout_constraintBottom_toTopOf="@+id/button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.442"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.573" />
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="114dp"
-        android:layout_height="60dp"
-        android:onClick="giris"
-        android:text="Giriş"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.457"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.706" />
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:hint="E-posta adresi"
+        android:background="@drawable/rounded_edittext"
+        android:paddingHorizontal="16dp"
+        android:textColorHint="#8A8A8A"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="16dp"
+        android:inputType="textEmailAddress" />
 
     <EditText
         android:id="@+id/edit2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
         android:hint="Şifre"
-        android:inputType="textPassword"
-        app:layout_constraintBottom_toTopOf="@+id/button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.432"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit"
-        app:layout_constraintVertical_bias="0.442" />
+        android:background="@drawable/rounded_edittext"
+        android:paddingHorizontal="16dp"
+        android:textColorHint="#8A8A8A"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="32dp"
+        android:inputType="textPassword" />
+
+    <Button
+        android:id="@+id/giris"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/rounded_button"
+        android:onClick="giris"
+        android:text="Giriş Yap"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/textView8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Kullanıcı Adınız"
-        app:layout_constraintBottom_toTopOf="@+id/edit"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/edit"
-        app:layout_constraintTop_toBottomOf="@+id/logoText"
-        app:layout_constraintVertical_bias="0.858" />
+        android:text="Şifremi unuttum"
+        android:textColor="#A0A0A0"
+        android:textSize="14sp"
+        android:layout_marginBottom="48dp" />
 
     <TextView
-        android:id="@+id/textView14"
+        android:id="@+id/button3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Şifreniz"
-        app:layout_constraintBottom_toTopOf="@+id/edit2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.003"
-        app:layout_constraintStart_toStartOf="@+id/edit2"
-        app:layout_constraintTop_toBottomOf="@+id/edit"
-        app:layout_constraintVertical_bias="0.619" />
+        android:text="Hesap oluştur"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="normal" />
 
-    <TextView
-        android:id="@+id/logoText"
-        android:layout_width="133dp"
-        android:layout_height="50dp"
-        android:shadowColor="#00C853"
-        android:shadowDx="2"
-        android:shadowDy="2"
-        android:shadowRadius="1.5"
-        android:text="Yok-La"
-        android:textColor="#000000"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/edit"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.057"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.19" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

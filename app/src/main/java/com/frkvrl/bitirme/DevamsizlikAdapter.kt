@@ -6,29 +6,34 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class DevamsizlikAdapter(
-    private val devamsizlikListesi: List<Pair<String, Int>>
-) : RecyclerView.Adapter<DevamsizlikAdapter.DevamsizlikViewHolder>() {
 
-    inner class DevamsizlikViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val ogrenciAdiText: TextView = itemView.findViewById(R.id.ogrenciAdiText)
-        val devamsizlikSayisiText: TextView = itemView.findViewById(R.id.devamsizlikSayisiText)
+class DevamsizlikAdapter(private val items: List<OgrenciYoklama>) :
+    RecyclerView.Adapter<DevamsizlikAdapter.ViewHolder>() {
+
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val adSoyadText: TextView = view.findViewById(R.id.tvAdSoyad)
+        val numaraText: TextView = view.findViewById(R.id.tvNumara)
+        val katilimDurumText: TextView = view.findViewById(R.id.tvDurum)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DevamsizlikViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_devamsizlik, parent, false)
-        return DevamsizlikViewHolder(view)
+            .inflate(R.layout.item_yoklama, parent, false)
+        return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: DevamsizlikViewHolder, position: Int) {
-        val (adSoyad, devamsizlikSayisi) = devamsizlikListesi[position]
+    override fun getItemCount() = items.size
 
-        holder.ogrenciAdiText.text = "Öğrenci: $adSoyad"
-        holder.devamsizlikSayisiText.text = "Devamsızlık: $devamsizlikSayisi gün"
-    }
-
-    override fun getItemCount(): Int {
-        return devamsizlikListesi.size
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val ogrenci = items[position]
+        holder.adSoyadText.text = ogrenci.adSoyad
+        holder.numaraText.text = ogrenci.numara
+        holder.katilimDurumText.text = if (ogrenci.katildiMi) "Katıldı" else "Katılmadı"
+        holder.katilimDurumText.setTextColor(
+            holder.itemView.context.getColor(
+                if (ogrenci.katildiMi) android.R.color.holo_green_dark
+                else android.R.color.holo_red_dark
+            )
+        )
     }
 }

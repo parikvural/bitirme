@@ -2,5 +2,7 @@ package com.frkvrl.bitirme
 
 data class OgrenciYoklama(
     val adSoyad: String,
-    val katildiMi: Boolean
+    val numara: String,
+    val katildiMi: Boolean,
+    val devamsizlikSayisi: Int = 0
 )

@@ -4,16 +4,14 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#0D0907"
     tools:context=".ogrtders">
-
-
 
     <LinearLayout
         android:id="@+id/dersListLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp" />
-
+        android:padding="24dp" />
 
 </ScrollView>

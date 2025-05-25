@@ -1,13 +1,14 @@
 package com.frkvrl.bitirme
 
 data class User(
-    val ad: String? = null,
-    val soyad: String? = null,
-    val numara: Long? = null,
-    val bolum: String? = null,
-    val sinif: Int? = null,
+    var ad: String? = null,
+    var soyad: String? = null,
+    var numara: String? = null,
+    var mail: String? = null,
+    var bolum: String? = null,
+    var sinif: String? = null,
     val rol: String? = null,
-    val verdigi_dersler: Map<String, Boolean>? = null,
+    val verdigi_dersler : Any? = null,
     val dersler: Map<String, Boolean>? = null,
     val devamsizliklar: Map<String, Boolean>? = null
 )

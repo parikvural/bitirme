@@ -14,26 +14,27 @@ class DevamsizlikListesiActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: DevamsizlikAdapter
-    private val devamsizlikListesi = mutableListOf<Pair<String, Int>>() // UID ve devamsızlık sayısı
+    private val devamsizlikListesi = mutableListOf<OgrenciYoklama>() // UID ve devamsızlık sayısı
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_devamsizlik_listesi)
 
         val dersID = intent.getStringExtra("dersID") ?: return
+        val sinif = intent.getStringExtra("sinif") ?: return // Sınıf bilgisini al
 
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         adapter = DevamsizlikAdapter(devamsizlikListesi)
         recyclerView.adapter = adapter
 
-        getAttendanceCounts(dersID)
+        getAttendanceCounts(dersID, sinif) // Sınıf bilgisini de metoda gönder
     }
 
-    private fun getAttendanceCounts(lessonCode: String) {
+    private fun getAttendanceCounts(lessonCode: String, sinif: String) {
         val database =
             FirebaseDatabase.getInstance("https://bitirme-cfd2e-default-rtdb.europe-west1.firebasedatabase.app/")
-        val attendanceRef = database.getReference("attendances").child(lessonCode)
+        val attendanceRef = database.getReference("attendances").child(sinif).child(lessonCode) // Sınıf ve ders kodunu path'e ekle
         val usersRef = database.getReference("users")
 
         attendanceRef.get().addOnSuccessListener { snapshot ->
@@ -54,11 +55,12 @@ class DevamsizlikListesiActivity : AppCompatActivity() {
 
                 for ((uid, count) in counts) {
                     val ad = usersSnapshot.child(uid).child("ad").getValue(String::class.java) ?: ""
-                    val soyad =
-                        usersSnapshot.child(uid).child("soyad").getValue(String::class.java) ?: ""
+                    val soyad = usersSnapshot.child(uid).child("soyad").getValue(String::class.java) ?: ""
+                    // Düzeltilen satır: Long tipini String'e dönüştürmek için Any ve toString() kullanıldı.
+                    val numara = usersSnapshot.child(uid).child("numara").getValue(Any::class.java)?.toString() ?: ""
                     val fullName = if (ad.isNotBlank() && soyad.isNotBlank()) "$ad $soyad" else uid
 
-                    devamsizlikListesi.add(fullName to count)
+                    devamsizlikListesi.add(OgrenciYoklama(fullName, numara, false)) // katildiMi: false
                 }
 
                 adapter.notifyDataSetChanged()

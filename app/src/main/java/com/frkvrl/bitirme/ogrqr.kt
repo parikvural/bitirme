@@ -24,7 +24,6 @@ class ogrqr : AppCompatActivity() {
     private var scannedToken: String? = null
     private var scannedTimestamp: Long? = null
 
-    // Hedef konum bilgisi
     private val TARGET_LATITUDE = 38.3875139
     private val TARGET_LONGITUDE = 27.1638606
     private val MAX_DISTANCE_METERS = 200
@@ -33,7 +32,6 @@ class ogrqr : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        // QR kod okutma başlatılır
         val integrator = IntentIntegrator(this)
         integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
         integrator.setPrompt("QR kodu okutunuz")
@@ -42,7 +40,6 @@ class ogrqr : AppCompatActivity() {
         integrator.initiateScan()
     }
 
-    // QR sonucu alınır
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -59,7 +56,6 @@ class ogrqr : AppCompatActivity() {
                     return
                 }
 
-                // Konum izni varsa devam et, yoksa iste
                 if (ActivityCompat.checkSelfPermission(
                         this,
                         Manifest.permission.ACCESS_FINE_LOCATION
@@ -69,7 +65,6 @@ class ogrqr : AppCompatActivity() {
                 } else {
                     locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                 }
-
             } else {
                 Toast.makeText(this, "Hatalı QR kod formatı", Toast.LENGTH_SHORT).show()
                 finish()
@@ -80,7 +75,6 @@ class ogrqr : AppCompatActivity() {
         }
     }
 
-    // Konum izni isteği sonucu
     private val locationPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
@@ -91,7 +85,6 @@ class ogrqr : AppCompatActivity() {
             }
         }
 
-    // Konumu al ve Firebase işlemlerine geç
     @SuppressLint("MissingPermission")
     private fun getLocationAndProceed() {
         fusedLocationClient.lastLocation
@@ -120,7 +113,6 @@ class ogrqr : AppCompatActivity() {
             }
     }
 
-    // Firebase işlemleri
     private fun continueWithFirebase() {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: run {
             Toast.makeText(this, "Kullanıcı bulunamadı", Toast.LENGTH_SHORT).show()
@@ -139,11 +131,12 @@ class ogrqr : AppCompatActivity() {
             val value = snapshot.child("value").getValue(String::class.java)
             val timestamp = snapshot.child("timestamp").getValue(Long::class.java)
             val lessonCode = snapshot.child("lessonCode").getValue(String::class.java)
+            val sinif = snapshot.child("sinif").getValue(String::class.java)
 
-            if (value == scannedToken && timestamp != null && lessonCode != null) {
+            if (value == scannedToken && timestamp != null && lessonCode != null && sinif != null) {
                 val isValid = (currentTime - timestamp) <= 5000
                 if (isValid) {
-                    val attendanceRef = database.getReference("attendances/$lessonCode/${getCurrentDate()}/$uid")
+                    val attendanceRef = database.getReference("attendances/$sinif/$lessonCode/${getCurrentDate()}/$uid")
                     attendanceRef.get().addOnSuccessListener { attendanceSnapshot ->
                         val alreadyPresent = attendanceSnapshot.getValue(Boolean::class.java)
                         if (alreadyPresent == true) {
