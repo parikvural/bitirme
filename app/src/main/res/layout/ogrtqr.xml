@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0D0907"
+    android:background="@color/primaryVariant"
     android:padding="24dp"
-    tools:context=".ogrtqr">
+    tools:context=".ogrqr">
 
     <include
         android:id="@+id/universite_header"
@@ -19,30 +18,45 @@
 
     <ImageView
         android:id="@+id/qrCodeImageView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="32dp"
-        android:background="#F0EFE7"
-        android:scaleType="fitCenter"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="48dp"
+        android:background="@color/tertiary"
+        android:scaleType="centerInside"
         android:padding="16dp"
         app:layout_constraintTop_toBottomOf="@id/universite_header"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintDimensionRatio="1:1"
-        android:contentDescription="Oluşturulan QR Kodu" />
+        android:contentDescription="QR Kodu" />
+
+    <Button
+        android:id="@+id/buttonIptal"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:text="Dersi İptal Et"
+        android:textColor="@color/onError"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:background="@drawable/rounded_button_red"
+        android:backgroundTint="@color/error"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@id/qrCodeImageView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/button2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Dersi Bitir ve Yoklamayı Görüntüle"
-        android:textColor="#FFFFFF"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Tüm Yoklamaları Göster"
+        android:textColor="@color/onSecondary"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:background="@drawable/rounded_button_large"
-        android:backgroundTint="#4FA2F0"
-        android:layout_marginTop="32dp"
-        app:layout_constraintTop_toBottomOf="@id/qrCodeImageView"
+        android:background="@drawable/rounded_button_blue"
+        android:backgroundTint="@color/secondary"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class yoklamaadapter(private val items: List<OgrenciYoklama>) :
+class yoklamaadapter(private val items: List<OgrenciDevam>) :
     RecyclerView.Adapter<yoklamaadapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

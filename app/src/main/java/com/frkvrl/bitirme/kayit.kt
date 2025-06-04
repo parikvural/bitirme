@@ -1,16 +1,20 @@
 package com.frkvrl.bitirme
 
 import android.content.Intent
-import android.graphics.Typeface
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.CheckBox
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.frkvrl.bitirme.databinding.ActivityKayitBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.firestore.FirebaseFirestore
+import java.util.Locale
 
 class kayit : AppCompatActivity() {
 
@@ -18,7 +22,7 @@ class kayit : AppCompatActivity() {
     private lateinit var database: FirebaseDatabase
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
-    private lateinit var dersCheckBoxMap: MutableMap<String, CheckBox>
+    private lateinit var dersCheckBoxMap: MutableMap<String, CheckBox> // Anahtar formatı: "SINIF_DERSKODU"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,28 +35,42 @@ class kayit : AppCompatActivity() {
         dersCheckBoxMap = mutableMapOf()
 
         setupSpinners()
+
         binding.btnKayitOl.setOnClickListener { kayitOl() }
+        binding.tvTeacherRegisterLink.setOnClickListener {
+            val intent = Intent(this, ogrtkayit::class.java)
+            startActivity(intent)
+        }
+
+        // Giriş Ekranına Dön butonuna tıklama dinleyicisi ekle
+        binding.btnGoToLogin.setOnClickListener {
+            val intent = Intent(this, giris::class.java) // giris.kt Activity'sine yönlendir
+            startActivity(intent)
+            finish() // Mevcut kayıt aktivitesini kapat
+        }
     }
 
     private fun setupSpinners() {
-        // Bölümler
+        // Bölüm Spinner
         database.getReference("bolumler").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val bolumList = snapshot.children.mapNotNull { it.key }
                 val bolumAdapter = ArrayAdapter(this@kayit, R.layout.spinner_item, bolumList)
-                bolumAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                bolumAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
                 binding.spinnerBolum.adapter = bolumAdapter
             }
 
-            override fun onCancelled(error: DatabaseError) {}
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(this@kayit, "Bölümler yüklenemedi: ${error.message}", Toast.LENGTH_SHORT).show()
+            }
         })
 
-        // Sınıflar ve dersler
+        // Sınıf Spinner
         database.getReference("dersler").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val sinifList = snapshot.children.mapNotNull { it.key }
                 val sinifAdapter = ArrayAdapter(this@kayit, R.layout.spinner_item, sinifList)
-                sinifAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                sinifAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
                 binding.spinnerSinif.adapter = sinifAdapter
 
                 binding.spinnerSinif.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -65,10 +83,11 @@ class kayit : AppCompatActivity() {
                 }
             }
 
-            override fun onCancelled(error: DatabaseError) {}
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(this@kayit, "Sınıflar yüklenemedi: ${error.message}", Toast.LENGTH_SHORT).show()
+            }
         })
     }
-
 
     private fun dersleriYukle(secilenSinif: String) {
         val dersRef = database.getReference("dersler/$secilenSinif")
@@ -78,7 +97,7 @@ class kayit : AppCompatActivity() {
                 dersCheckBoxMap.clear()
 
                 if (!snapshot.exists()) {
-                    Toast.makeText(this@kayit, "Ders bulunamadı.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@kayit, "Bu sınıfa ait ders bulunamadı.", Toast.LENGTH_SHORT).show()
                     return
                 }
 
@@ -87,42 +106,72 @@ class kayit : AppCompatActivity() {
                     val dersAdi = ders.child("ad").getValue(String::class.java) ?: dersKodu
                     val checkBox = CheckBox(this@kayit).apply {
                         text = "$dersKodu - $dersAdi"
-                        textSize = 16f // Yazı boyutu (sp cinsinden)
-                        setTextColor(resources.getColor(android.R.color.white, theme))
+                        textSize = 16f
+                        setTextColor(ContextCompat.getColor(this@kayit, R.color.onPrimary))
                     }
                     binding.layoutDersler.addView(checkBox)
-                    dersCheckBoxMap[dersKodu] = checkBox
+                    // Anahtarı "SINIF_DERSKODU" formatında sakla
+                    dersCheckBoxMap["${secilenSinif}_$dersKodu"] = checkBox
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@kayit, "Veri alınamadı: ${error.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@kayit, "Dersler yüklenemedi: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
 
     private fun temizleVeKucult(metin: String): String {
-        return metin.lowercase()
+        return metin.lowercase(Locale.getDefault())
             .replace("ç", "c").replace("ğ", "g").replace("ı", "i")
             .replace("ö", "o").replace("ş", "s").replace("ü", "u")
     }
 
     private fun kayitOl() {
-        val ad = binding.etAd.text.toString().trim()
-        val soyad = binding.etSoyad.text.toString().trim()
+        val adInput = binding.etAd.text.toString().trim()
+        val soyadInput = binding.etSoyad.text.toString().trim()
         val numara = binding.etNumara.text.toString().trim()
         val sinif = binding.spinnerSinif.selectedItem?.toString() ?: ""
         val bolum = binding.spinnerBolum.selectedItem?.toString() ?: ""
 
-        if (ad.isEmpty() || soyad.isEmpty() || numara.isEmpty() || sinif.isEmpty() || bolum.isEmpty()) {
+        if (adInput.isEmpty() || soyadInput.isEmpty() || numara.isEmpty() || sinif.isEmpty() || bolum.isEmpty()) {
             Toast.makeText(this, "Lütfen tüm alanları doldurun.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val mail = "${temizleVeKucult(ad)}.${temizleVeKucult(soyad)}@ogr.deu.edu.tr"
+        // İsim ve Soyismin ilk harflerini büyük yap
+        val ad = temizleVeKucult(adInput).replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+        val soyad = temizleVeKucult(soyadInput).replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+
+        val mail = "${temizleVeKucult(adInput)}.${temizleVeKucult(soyadInput)}@ogr.deu.edu.tr"
         val sifre = numara
 
-        val secilenDersler = dersCheckBoxMap.filterValues { it.isChecked }.mapValues { true }
+        // Seçilen dersleri sınıfa göre iç içe Map olarak oluştur
+        val secilenDerslerByClass = mutableMapOf<String, MutableMap<String, Boolean>>()
+        dersCheckBoxMap.filterValues { it.isChecked }.forEach { (key, _) ->
+            val parts = key.split("_", limit = 2) // "SINIF_DERSKODU" formatını ayır
+            if (parts.size == 2) {
+                val currentSinif = parts[0]
+                val dersKodu = parts[1]
+                secilenDerslerByClass.getOrPut(currentSinif) { mutableMapOf() }[dersKodu] = true
+            }
+        }
+
+        // Öğrencinin sadece bir sınıftan ders seçtiğini doğrula
+        val distinctClasses = secilenDerslerByClass.keys.distinct()
+        if (distinctClasses.size > 1) {
+            Toast.makeText(this, "Öğrenciler sadece bir sınıftan ders seçebilir.", Toast.LENGTH_LONG).show()
+            return
+        }
+        // Eğer ders seçilmişse ve tek bir sınıf varsa, o sınıfı sinif değişkenine ata
+        val finalSinif = distinctClasses.firstOrNull() ?: sinif // Eğer ders seçilmemişse spinner'dan gelen sinif'i kullan
+
+        // Hiç ders seçilip seçilmediğini kontrol et
+        if (secilenDerslerByClass.isEmpty()) {
+            Toast.makeText(this, "Lütfen en az bir ders seçin.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
 
         auth.createUserWithEmailAndPassword(mail, sifre).addOnSuccessListener { authResult ->
             val uid = authResult.user?.uid ?: return@addOnSuccessListener
@@ -132,16 +181,18 @@ class kayit : AppCompatActivity() {
                 "numara" to numara,
                 "mail" to mail,
                 "bolum" to bolum,
-                "sinif" to sinif,
+                "sinif" to finalSinif, // Sınıf bilgisini güncellenmiş ders seçiminden al
                 "rol" to "Öğrenci",
-                "dersler" to secilenDersler
+                "dersler" to secilenDerslerByClass // İç içe Map olarak kaydet
             )
 
             val kullaniciRef = database.getReference("users").child(uid)
             kullaniciRef.setValue(userMap).addOnSuccessListener {
                 val derslerRef = database.getReference("dersler")
-                for ((dersId, _) in secilenDersler) {
-                    derslerRef.child(sinif).child(dersId).child("ogrenciler").child(uid).setValue(true)
+                for ((sinifAdi, derslerMap) in secilenDerslerByClass) { // Sınıf bazında dersleri işle
+                    for ((dersId, _) in derslerMap) {
+                        derslerRef.child(sinifAdi).child(dersId).child("ogrenciler").child(uid).setValue(true)
+                    }
                 }
 
                 val deviceId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)

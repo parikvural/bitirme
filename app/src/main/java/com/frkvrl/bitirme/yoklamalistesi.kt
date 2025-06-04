@@ -56,8 +56,8 @@ class yoklamalistesi : AppCompatActivity() {
 
             // Basit test listesi göster
             val testList = listOf(
-                OgrenciYoklama("Test Öğrenci 1", "123", true),
-                OgrenciYoklama("Test Öğrenci 2", "456", false)
+                OgrenciDevam("Test Öğrenci 1", "123", true),
+                OgrenciDevam("Test Öğrenci 2", "456", false)
             )
 
             recyclerView.adapter = yoklamaadapter(testList)
@@ -140,7 +140,7 @@ class yoklamalistesi : AppCompatActivity() {
 
             Log.d("YoklamaListesi", "Attendance path: attendances/$sinif/$lessonCode/$todayDate")
 
-            val ogrenciList = mutableListOf<OgrenciYoklama>()
+            val ogrenciList = mutableListOf<OgrenciDevam>()
             var completedCount = 0
 
             // Önce yoklama durumlarını al
@@ -164,7 +164,7 @@ class yoklamalistesi : AppCompatActivity() {
 
                         Log.d("YoklamaListesi", "User bilgileri - Ad: $ad, Soyad: $soyad, Numara: $numara")
 
-                        ogrenciList.add(OgrenciYoklama("$ad $soyad", numara, katildiMi))
+                        ogrenciList.add(OgrenciDevam("$ad $soyad", numara, katildiMi))
                         completedCount++
 
                         Log.d("YoklamaListesi", "Completed: $completedCount / ${ogrenciUIDs.size}")
@@ -189,7 +189,7 @@ class yoklamalistesi : AppCompatActivity() {
                         Log.e("YoklamaListesi", "User bilgisi alınamadı ($uid): ${userError.message}")
 
                         // Hata durumunda da sayacı artır
-                        ogrenciList.add(OgrenciYoklama("Bilinmeyen ($uid)", "?", katildiMi))
+                        ogrenciList.add(OgrenciDevam("Bilinmeyen ($uid)", "?", katildiMi))
                         completedCount++
 
                         if (completedCount == ogrenciUIDs.size) {

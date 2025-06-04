@@ -3,7 +3,7 @@
     android:id="@+id/girisLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#262626"
+    android:background="@color/primaryVariant"
     android:orientation="vertical"
     android:gravity="center_horizontal"
     android:padding="32dp">
@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Giriş"
-        android:textColor="#FFFFFF"
+        android:textColor="@color/onPrimary"
         android:textSize="36sp"
         android:textStyle="bold"
         android:layout_marginBottom="48dp" />
@@ -23,10 +23,10 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:hint="E-posta adresi"
-        android:background="@drawable/rounded_edittext"
+        android:background="@drawable/rounded_edittext_dark"
         android:paddingHorizontal="16dp"
-        android:textColorHint="#8A8A8A"
-        android:textColor="#FFFFFF"
+        android:textColorHint="@color/lightGray"
+        android:textColor="@color/onPrimary"
         android:layout_marginBottom="16dp"
         android:inputType="textEmailAddress" />
 
@@ -35,10 +35,10 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:hint="Şifre"
-        android:background="@drawable/rounded_edittext"
+        android:background="@drawable/rounded_edittext_dark"
         android:paddingHorizontal="16dp"
-        android:textColorHint="#8A8A8A"
-        android:textColor="#FFFFFF"
+        android:textColorHint="@color/lightGray"
+        android:textColor="@color/onPrimary"
         android:layout_marginBottom="32dp"
         android:inputType="textPassword" />
 
@@ -47,19 +47,20 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_marginBottom="24dp"
-        android:background="@drawable/rounded_button"
+        android:background="@drawable/rounded_button_blue"
         android:onClick="giris"
         android:text="Giriş Yap"
-        android:textColor="#FFFFFF"
+        android:textColor="@color/onSecondary"
         android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:backgroundTint="@color/secondary" />
 
     <TextView
         android:id="@+id/textView8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Şifremi unuttum"
-        android:textColor="#A0A0A0"
+        android:textColor="@color/secondary"
         android:textSize="14sp"
         android:layout_marginBottom="48dp" />
 
@@ -68,7 +69,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Hesap oluştur"
-        android:textColor="#FFFFFF"
+        android:textColor="@color/onPrimary"
         android:textSize="16sp"
         android:textStyle="normal" />
 

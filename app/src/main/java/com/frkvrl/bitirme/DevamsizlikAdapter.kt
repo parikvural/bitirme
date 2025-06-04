@@ -6,14 +6,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-
 class DevamsizlikAdapter(private val items: List<OgrenciYoklama>) :
     RecyclerView.Adapter<DevamsizlikAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val adSoyadText: TextView = view.findViewById(R.id.tvAdSoyad)
         val numaraText: TextView = view.findViewById(R.id.tvNumara)
-        val katilimDurumText: TextView = view.findViewById(R.id.tvDurum)
+        val devamsizlikSayisiText: TextView = view.findViewById(R.id.tvDurum) // "tvDurum" ID'sini devamsızlık için kullanacağız
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -28,12 +27,6 @@ class DevamsizlikAdapter(private val items: List<OgrenciYoklama>) :
         val ogrenci = items[position]
         holder.adSoyadText.text = ogrenci.adSoyad
         holder.numaraText.text = ogrenci.numara
-        holder.katilimDurumText.text = if (ogrenci.katildiMi) "Katıldı" else "Katılmadı"
-        holder.katilimDurumText.setTextColor(
-            holder.itemView.context.getColor(
-                if (ogrenci.katildiMi) android.R.color.holo_green_dark
-                else android.R.color.holo_red_dark
-            )
-        )
+        holder.devamsizlikSayisiText.text = "Devamsızlık: ${ogrenci.devamsizlikSayisi}"
     }
 }

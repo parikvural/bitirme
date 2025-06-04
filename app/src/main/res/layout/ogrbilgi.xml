@@ -3,10 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:id="@+id/ogrbilgi_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0D0907"
+    android:background="@color/primaryVariant"
     android:padding="24dp">
 
     <include
@@ -16,83 +16,27 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <Button
-        android:id="@+id/btnDatePicker"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="Tarih Seç"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:background="@drawable/rounded_button_large"
-        android:backgroundTint="#4FA2F0"
-        android:layout_marginTop="32dp"
-        app:layout_constraintTop_toBottomOf="@id/universite_header"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="Tüm Devamsızlıkları Göster"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:background="@drawable/rounded_button_large"
-        android:backgroundTint="#4FA2F0"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/btnDatePicker"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <DatePicker
-        android:id="@+id/datePicker"
+    <TextView
+        android:id="@+id/ders_listesi_baslik"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:calendarViewShown="true"
-        android:visibility="gone"
-        android:layout_marginTop="24dp"
-        app:layout_constraintTop_toBottomOf="@id/button2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <Button
-        android:id="@+id/btnQrBaslat"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="Dersi Başlat"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
+        android:layout_marginTop="32dp"
+        android:text="Aldığınız Dersler"
+        android:textColor="@color/onPrimary"
+        android:textSize="24sp"
         android:textStyle="bold"
-        android:background="@drawable/rounded_button_large"
-        android:backgroundTint="#4FA2F0"
-        android:layout_marginTop="24dp"
-        app:layout_constraintTop_toBottomOf="@+id/datePicker"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <Button
-        android:id="@+id/button5"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="Öğrenci Bilgileri"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:background="@drawable/rounded_button_large"
-        android:backgroundTint="#4FA2F0"
-        android:layout_marginTop="24dp"
-        app:layout_constraintTop_toBottomOf="@+id/btnQrBaslat"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/universite_header" />
 
     <ListView
         android:id="@+id/listView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/button5"
+        android:background="@color/transparentBlack"
+        android:divider="@color/tertiaryVariant"
+        android:dividerHeight="1dp"
+        app:layout_constraintTop_toBottomOf="@id/ders_listesi_baslik"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />

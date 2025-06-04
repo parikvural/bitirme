@@ -8,6 +8,7 @@ import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
+
 class ogrtana : ogrtnavbar() {
 
     private lateinit var textView6: TextView
@@ -49,13 +50,27 @@ class ogrtana : ogrtnavbar() {
                     return
                 }
 
+                // DataSnapshot'ı User veri sınıfına dönüştür
                 val user = snapshot.getValue(User::class.java)
                 if (user != null) {
                     Log.d("FirebaseData", "Kullanıcı ad: ${user.ad}, soyad: ${user.soyad}")
                     textView6.text = user.ad ?: "Ad yok"
                     textViewSoyad.text = user.soyad ?: "Soyad yok"
+
+                    // Dersler alanını manuel olarak doğru tipe dönüştürmeye çalış
+                    val derslerMap: Map<String, Map<String, Boolean>> = try {
+                        @Suppress("UNCHECKED_CAST") // Güvenli olmayan tip dönüşüm uyarısını gizle
+                        user.dersler as? Map<String, Map<String, Boolean>> ?: emptyMap()
+                    } catch (e: Exception) {
+                        // Dönüştürme sırasında bir hata oluşursa (örn: ArrayList gelirse)
+                        Log.e("FirebaseData", "Dersler alanı dönüştürme hatası: ${e.message}", e)
+                        emptyMap() // Hata durumunda boş bir Map döndür
+                    }
+                    // derslerMap'i burada kullanabilirsiniz, örneğin Log'a yazdırarak kontrol edebilirsiniz.
+                    Log.d("FirebaseData", "Dersler: $derslerMap")
+
                 } else {
-                    Log.w("FirebaseData", "User objesi null.")
+                    Log.w("FirebaseData", "User objesi null veya dönüştürme başarısız.")
                     textView6.text = "Ad yok"
                     textViewSoyad.text = "Soyad yok"
                 }

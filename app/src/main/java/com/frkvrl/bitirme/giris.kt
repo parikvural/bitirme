@@ -9,6 +9,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.firestore.SetOptions // SetOptions için import
 
 class giris : AppCompatActivity() {
 
@@ -56,6 +60,8 @@ class giris : AppCompatActivity() {
         // Eğer kullanıcı zaten giriş yaptıysa direkt yönlendir
         auth.currentUser?.let { user ->
             val uid = user.uid
+            // Cihaz kontrolü yapmadan direkt yönlendirme,
+            // çünkü cihaz kontrolü her girişte yapılacak
             kontrolVeYonlendir(uid)
         }
     }
@@ -73,7 +79,8 @@ class giris : AppCompatActivity() {
             .addOnSuccessListener { result ->
                 val uid = result.user?.uid
                 if (uid != null) {
-                    cihazKontrolVeKayit(uid)
+                    // Yeni cihaz kontrol ve kayıt mantığı
+                    cihazKaydet(uid)
                 } else {
                     Toast.makeText(this, "Kullanıcı bilgisi alınamadı.", Toast.LENGTH_SHORT).show()
                 }
@@ -83,30 +90,64 @@ class giris : AppCompatActivity() {
             }
     }
 
-    private fun cihazKontrolVeKayit(uid: String) {
+    // Yeni cihaz kayıt fonksiyonu
+    private fun cihazKaydet(uid: String) {
         val deviceId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
-        val cihazRef = firestore.collection("device_links").document(deviceId)
 
-        cihazRef.get().addOnSuccessListener { doc ->
+        // Adım 1: Bu cihazın başka bir kullanıcıya kayıtlı olup olmadığını kontrol et (mevcut mantık)
+        val deviceLinkRef = firestore.collection("device_links").document(deviceId)
+        deviceLinkRef.get().addOnSuccessListener { doc ->
             val kayitliUid = doc.getString("uid")
 
-            if (kayitliUid == null) {
-                // İlk kez giriş yapan kullanıcı için cihaz kaydı yapılıyor
-                cihazRef.set(mapOf("uid" to uid)).addOnSuccessListener {
-                    kontrolVeYonlendir(uid)
-                }.addOnFailureListener {
-                    Toast.makeText(this, "Cihaz eşleştirme kaydı başarısız!", Toast.LENGTH_SHORT).show()
-                }
-            } else if (kayitliUid == uid) {
-                // Aynı kullanıcı tekrar giriş yapıyor
-                kontrolVeYonlendir(uid)
-            } else {
-                // Başka kullanıcı bu cihazdan giriş yapamaz
+            if (kayitliUid != null && kayitliUid != uid) {
+                // Bu cihaz başka bir kullanıcıya kayıtlı ve farklı bir kullanıcı giriş yapmaya çalışıyor
                 Toast.makeText(this, "Bu cihaz başka kullanıcıya kayıtlı!", Toast.LENGTH_LONG).show()
                 auth.signOut()
+                return@addOnSuccessListener
             }
-        }.addOnFailureListener {
-            Toast.makeText(this, "Firestore hatası: ${it.message}", Toast.LENGTH_SHORT).show()
+
+            // Adım 2: Kullanıcının başka bir cihazda oturum açıp açmadığını kontrol et (yeni mantık)
+            val userActiveDeviceRef = realtimeDb.getReference("users").child(uid).child("active_device")
+            userActiveDeviceRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val activeDeviceId = snapshot.getValue(String::class.java)
+
+                    if (activeDeviceId != null && activeDeviceId != deviceId) {
+                        // Kullanıcı başka bir cihazda oturum açmış
+                        Toast.makeText(this@giris, "Bu hesap zaten başka bir cihazda açık!", Toast.LENGTH_LONG).show()
+                        auth.signOut()
+                        return // İşlemi sonlandır
+                    }
+
+                    // Adım 3: Tüm kontroller başarılı, cihazı kaydet ve yönlendir
+                    // Cihazı bu kullanıcıya bağla (Firestore)
+                    deviceLinkRef.set(mapOf("uid" to uid))
+                        .addOnSuccessListener {
+                            // Kullanıcının aktif cihazını güncelle (Realtime Database)
+                            userActiveDeviceRef.setValue(deviceId)
+                                .addOnSuccessListener {
+                                    kontrolVeYonlendir(uid)
+                                }
+                                .addOnFailureListener { e ->
+                                    Toast.makeText(this@giris, "Aktif cihaz kaydı başarısız: ${e.message}", Toast.LENGTH_SHORT).show()
+                                    auth.signOut()
+                                }
+                        }
+                        .addOnFailureListener { e ->
+                            Toast.makeText(this@giris, "Cihaz eşleştirme kaydı başarısız: ${e.message}", Toast.LENGTH_SHORT).show()
+                            auth.signOut()
+                        }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(this@giris, "Aktif cihaz kontrolü başarısız: ${error.message}", Toast.LENGTH_SHORT).show()
+                    auth.signOut()
+                }
+            })
+
+        }.addOnFailureListener { e ->
+            Toast.makeText(this, "Firestore hatası: ${e.message}", Toast.LENGTH_SHORT).show()
+            auth.signOut()
         }
     }
 

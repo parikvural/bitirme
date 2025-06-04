@@ -9,8 +9,7 @@ data class User(
     var sinif: String? = null,
     val rol: String? = null,
     val verdigi_dersler : Any? = null,
-    val dersler: Map<String, Boolean>? = null,
+    val dersler: Any? = null,
     val devamsizliklar: Map<String, Boolean>? = null
 )
-
 

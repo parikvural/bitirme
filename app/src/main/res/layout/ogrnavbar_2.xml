@@ -5,7 +5,7 @@
     android:id="@+id/navbar"
     android:layout_width="match_parent"
     android:layout_height="80dp"
-    android:background="#1A1A1A"
+    android:background="@color/transparentBlack"
     android:elevation="8dp">
 
     <ImageButton
@@ -16,7 +16,7 @@
         android:contentDescription="Ana Sayfa"
         android:scaleType="fitCenter"
         android:src="@drawable/home"
-        app:tint="#9E9E9E"
+        app:tint="@color/tertiaryVariant"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/nav_ogrqr"
         app:layout_constraintStart_toStartOf="parent"
@@ -30,7 +30,7 @@
         android:contentDescription="qr"
         android:scaleType="fitCenter"
         android:src="@drawable/qr_code_scan"
-        app:tint="#4FA2F0"
+        app:tint="@color/secondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -44,7 +44,7 @@
         android:contentDescription="bilgi"
         android:scaleType="fitCenter"
         android:src="@drawable/book"
-        app:tint="#9E9E9E"
+        app:tint="@color/tertiaryVariant"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/nav_ogrqr"

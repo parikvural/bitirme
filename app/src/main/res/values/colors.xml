@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-</resources>
+    <color name="primary">#1E1E1E</color> <color name="primaryVariant">#333333</color> <color name="onPrimary">#FFFFFF</color>
+    <color name="secondary">#4A90E2</color> <color name="secondaryVariant">#6DD5ED</color> <color name="onSecondary">#FFFFFF</color> <color name="tertiary">#F5F5F5</color> <color name="tertiaryVariant">#E0E0E0</color> <color name="onTertiary">#000000</color> <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="lightGray">#F0F0F0</color>
+    <color name="darkGray">#333333</color>
+    <color name="transparentWhite">#B3FFFFFF</color>
+    <color name="transparentBlue">#804A90E2</color>
+    <color name="transparentBlack">#80000000</color>
+    <color name="red">#FF6B6B</color>
+    <color name="error">#FF0000</color> <color name="onError">#FFFFFF</color> </resources>

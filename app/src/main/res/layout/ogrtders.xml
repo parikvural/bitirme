@@ -4,7 +4,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0D0907"
+    android:background="@color/primaryVariant"
     tools:context=".ogrtders">
 
     <LinearLayout
@@ -12,6 +12,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp" />
+        android:padding="24dp">
+
+        <TextView
+            android:id="@+id/emptyView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ders bulunamadı."
+            android:textColor="@color/onPrimary"
+            android:textSize="18sp"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:layout_marginTop="32dp" />
+
+    </LinearLayout>
 
 </ScrollView>

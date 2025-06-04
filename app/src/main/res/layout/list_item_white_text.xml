@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/text1"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/transparentBlack"
-    android:gravity="center"
-    android:paddingVertical="18dp"
-    android:text="Dokuz Eylül Üniversitesi"
-    android:textColor="@color/onPrimary"
+    android:padding="16dp"
     android:textSize="18sp"
-    android:textStyle="bold"
+    android:textColor="@color/onPrimary"
+    android:background="@color/transparentBlack"
     android:fontFamily="sans-serif-medium" />

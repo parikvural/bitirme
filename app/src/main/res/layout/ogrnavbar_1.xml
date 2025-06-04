@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0D0907"  android:fitsSystemWindows="true">
+    android:background="@color/primaryVariant"
+    android:fitsSystemWindows="true">
 
     <FrameLayout
         android:id="@+id/activity_content"
@@ -19,7 +20,11 @@
         android:id="@+id/navbar_container"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:paddingLeft="24dp"   android:paddingRight="24dp"  android:layout_marginBottom="24dp" android:clipToPadding="false"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:layout_marginBottom="24dp"
+        android:clipToPadding="false"
+        android:background="@color/transparentBlack"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">

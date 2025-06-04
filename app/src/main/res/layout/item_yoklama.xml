@@ -2,36 +2,38 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingVertical="14dp"
-    android:paddingHorizontal="16dp"
-    android:background="#1A1A1A">
+    android:orientation="horizontal"
+    android:padding="16dp"
+    android:background="@drawable/rounded_card_dark"
+    android:layout_marginBottom="8dp"
+    android:gravity="center_vertical">
 
     <TextView
         android:id="@+id/tvAdSoyad"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:textStyle="bold"
+        android:textColor="@color/onPrimary"
         android:textSize="18sp"
-        android:textColor="#F0EFE7"
-        android:text="Öğrenci Adı Soyadı"
-        android:layout_marginBottom="6dp" />
+        android:fontFamily="sans-serif-medium"
+        android:text="Ad Soyad" />
 
     <TextView
         android:id="@+id/tvNumara"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:textColor="#9E9E9E"
-        android:text="Numara"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginStart="16dp"
+        android:textColor="@color/tertiaryVariant"
+        android:textSize="16sp"
+        android:text="Numara" />
 
     <TextView
         android:id="@+id/tvDurum"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:textColor="@color/secondary"
         android:textSize="16sp"
-        android:textColor="#4FA2F0"
-        android:text="Durum" />
-
+        android:text="Katıldı" />
 </LinearLayout>
